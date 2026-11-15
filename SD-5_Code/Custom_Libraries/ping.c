@@ -5,7 +5,7 @@
  *      Author: ssharuk
  */
 
-#include "timer.h"
+#include "Timer.h"
 #include <math.h>
 #include "lcd.h"
 //#include ""

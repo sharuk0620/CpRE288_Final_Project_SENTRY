@@ -19,6 +19,8 @@ void move_backward(oi_t *sensor, double millimeters);
 
 int simple_move_forward(oi_t *sensor, double millimeters);
 
+void cliff_move_forward(oi_t *sensor, double millimeters);
+
 //Turns the Cybot clockwise a specified number of degrees
 void turn_clockwise(oi_t *sensor, int degrees);
 

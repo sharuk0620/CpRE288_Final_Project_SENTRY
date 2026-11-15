@@ -11,7 +11,7 @@
 */
 
 #include "uart.h"
-#include "timer.h"
+#include "Timer.h"
 #include "lcd.h"
 
 volatile  char uart_data;  // Your UART interupt code can place read data here

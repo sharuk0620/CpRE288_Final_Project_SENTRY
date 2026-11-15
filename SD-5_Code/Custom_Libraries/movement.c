@@ -151,6 +151,58 @@ int simple_move_forward(oi_t *sensor, double millimeters){
 }
 
 //Moves the robot forward a certain millimeter amount
+void cliff_move_forward(oi_t *sensor, double millimeters){
+
+    int cliffValLeft = 0;
+    int cliffValFrontLeft = 0;
+
+    int cliffValRight = 0;
+    int cliffValFrontRight = 0;
+
+    //Clears sensor before moving to ensure no stored values
+    oi_update(sensor);
+
+    //Sum defines the distance covered by the robot
+    double sum = 0;
+
+    //As the sum is less than the millimeters specified (millimeters should be a positive number)
+    while (sum < millimeters){
+
+        //Clears sensor before moving to ensure no stored values
+        oi_update(sensor);
+
+        cliffValLeft = sensor->cliffLeftSignal;
+        cliffValFrontLeft = sensor->cliffFrontLeftSignal;
+
+        cliffValRight = sensor->cliffRightSignal;
+        cliffValFrontRight = sensor->cliffFrontRightSignal;
+
+        if(!(250 <= cliffValLeft && cliffValLeft <= 2500)){
+            break;
+        }
+        if(!(250 <= cliffValFrontLeft && cliffValFrontLeft <= 2500)){
+            break;
+        }
+        if(!(250 <= cliffValRight && cliffValRight <= 2500)){
+            break;
+        }
+        if(!(250 <= cliffValFrontRight && cliffValFrontRight <= 2500)){
+            break;
+        }
+
+        //Updates the sensor, increments sum with the read sensor value, and sets wheels to 100 forwards until sum is = to millimeters, meaning it has went that distance
+        oi_update(sensor);
+        sum += sensor->distance;
+        oi_setWheels(50, 50);
+
+    }
+    //Stops wheels
+    oi_setWheels(0, 0);
+}
+
+
+
+//Moves the robot forward a certain millimeter amount
 void move_forward(oi_t *sensor, double millimeters){
 
     //Clears sensor before moving to ensure no stored values
@@ -297,6 +349,8 @@ void collisionProgram(oi_t *sensor, double distToTravel){
     //Stops wheels
     oi_setWheels(0, 0);
 }
+
+
 
 
 
