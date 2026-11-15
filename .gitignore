@@ -1,14 +1,12 @@
-# Ignores Debug and Release folders in ANY subfolder
+# Build output folder shown in CCS
 Debug/
 Release/
 
-# Ignores CCS local state folders in ANY subfolder
+# Hidden CCS local state folders on disk
 .launches/
 .settings/
 
-# Compiled binaries and object files
-*.obj
-*.out
-*.bin
-*.hex
-*.map
+.jxbrowser.userdata/
+RemoteSystemsTempFiles/
+
+.metadata/
