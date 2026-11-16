@@ -17,7 +17,7 @@ void sendMessage(char messageSent[]);
 
 //Black/Felt for Hole - Value <= 250
 //Normal Gray Floor - 250 <= Value <= 2500
-//White Tape Value >= 2500
+//White Tape for boundary Value >= 2500
 
 
 int main(void)
