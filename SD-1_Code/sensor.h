@@ -49,10 +49,7 @@ float sensor_ping_cm(void);
 // UPPER_ANGLE stepping STEP each iter. CALLBACK_PTR(int, cyBOT_Scan_t) is
 // called on each new scan step. servo_init, adc_init and ping_init must have
 // been called first.
-void scan_range(int lower_angle, int upper_angle, int step,
-                cyBOT_Scan_t *scan_data,
-                void (*callback_ptr)(int angle, cyBOT_Scan_t *scan_data),
-                int num_scans);
+void scan_range(int lower_angle, int upper_angle, int step, cyBOT_Scan_t *scan_data, void (*callback_ptr)(int angle, cyBOT_Scan_t *scan_data), int num_scans);
 void scan_full_arc(cyBOT_Scan_t *scan_data, int start_angle, int stop_angle);
 
 // Process noisy data using exponential smoothing
@@ -71,8 +68,10 @@ void object_update_linear_width(Object_t *obj, int start_angle, int end_angle);
 Object_t find_smallest_objects(cyBOT_Scan_t data_array[], int start_angle,
                                int end_angle, cyBOT_Scan_t *scan_data);
 
-int find_all_objects(cyBOT_Scan_t data_array[], int start_angle, int end_angle,
-                     cyBOT_Scan_t *scan_data, Object_t objects[],
-                     int max_objects);
+int find_all_objects(cyBOT_Scan_t data_array[], int start_angle, int end_angle, cyBOT_Scan_t *scan_data, Object_t objects[], int max_objects);
+
+ObjectClass_t classify_object(float width);
+
+void classify_all_objects(Object_t objects[], int count);
 
 #endif /* SENSOR_H_ */
