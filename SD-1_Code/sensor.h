@@ -9,14 +9,35 @@
 #define SENSOR_H_
 
 #include "cyBot_Scan.h"
-
+typedef enum
+{
+    OBJECT_UNKNOWN = 0,
+    OBJECT_LARGEST,
+    OBJECT_SECOND_LARGEST,
+    OBJECT_THIRD_LARGEST,
+    OBJECT_SURVIVOR
 typedef struct detect_object
 {
+     int id;
+
     float center_angle;
     float distance;
     float linear_width;
+
     int start;
     int end;
+
+    ObjectClass_t classification;
+
+    // 1 if the object touches a scan boundary and needs verification
+    int needs_rescan;
+
+    // 1 once the object has been completely verified
+    int verified;
+
+    // 1 if this object has been bumped
+    int bumped;
+
 } Object_t;
 
 cyBOT_Scan_t scan_sensor_data_array[91];
