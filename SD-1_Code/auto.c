@@ -73,9 +73,7 @@ static int path_clear(void)
         {
             forward = r * cos(rel);
             lateral = r * sin(rel);
-            if (forward > 0 && forward < CLEAR_AHEAD_CM
-                    && fabs(lateral)
-                            < ROBOT_HALF_WIDTH_CM + CLEAR_SIDE_MARGIN_CM)
+            if (forward > 0 && forward < CLEAR_AHEAD_CM && fabs(lateral)< ROBOT_HALF_WIDTH_CM + CLEAR_SIDE_MARGIN_CM)
             {
                 return 0;
             }
