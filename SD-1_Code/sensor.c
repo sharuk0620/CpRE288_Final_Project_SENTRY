@@ -30,7 +30,7 @@
 #define DIST_DISAGREE_CM 5.0   // if PING and IR differ by more than this, trust IR
 
 int scan_index = 0;
-float center_distance;  // CM
+float center_distance; //CM
 
 // PING pulse width (16 MHz ticks) to cm: speed of sound 34300 cm/s, round trip / 2
 float sensor_ping_cm(void)
@@ -77,22 +77,16 @@ void process_noisy_data(int angle, cyBOT_Scan_t *scan_data)
     if (scan_index == 0)
     {
         scan_sensor_data_array[scan_index].sound_dist = scan_data->sound_dist;
-        scan_sensor_data_array[scan_index].IR_raw_val =
-                vToCm < 100 ? vToCm : 100;
+        scan_sensor_data_array[scan_index].IR_raw_val = vToCm < 100 ? vToCm : 100;
         goto process_noisy_data_exit;
     }
 
     cyBOT_Scan_t obj;
 
     // Smooth ping
-    if (scan_data->sound_dist
-            > 0.85 * scan_sensor_data_array[scan_index - 1].sound_dist
-            && scan_data->sound_dist
-                    < 1.15 * scan_sensor_data_array[scan_index - 1].sound_dist)
+    if (scan_data->sound_dist > 0.85 * scan_sensor_data_array[scan_index - 1].sound_dist && scan_data->sound_dist < 1.15 * scan_sensor_data_array[scan_index - 1].sound_dist)
     {
-        obj.sound_dist = SCAN_ALPHA_SOUND * scan_data->sound_dist
-                + (1 - SCAN_ALPHA_SOUND)
-                        * scan_sensor_data_array[scan_index - 1].sound_dist;
+        obj.sound_dist = SCAN_ALPHA_SOUND * scan_data->sound_dist + (1 - SCAN_ALPHA_SOUND) * scan_sensor_data_array[scan_index - 1].sound_dist;
     }
     else
     {
@@ -100,26 +94,17 @@ void process_noisy_data(int angle, cyBOT_Scan_t *scan_data)
     }
 
     // Smooth IR
-    if (vToCm > 0.7 * scan_sensor_data_array[scan_index - 1].IR_raw_val
-            && vToCm < 1.30 * scan_sensor_data_array[scan_index - 1].IR_raw_val)
+    if (vToCm > 0.7 * scan_sensor_data_array[scan_index - 1].IR_raw_val && vToCm < 1.30 * scan_sensor_data_array[scan_index - 1].IR_raw_val)
     {
         obj.IR_raw_val = SCAN_ALPHA_IR * vToCm + (1 - SCAN_ALPHA_IR) * scan_sensor_data_array[scan_index - 1].IR_raw_val;
     }
     else
     {
         // Check for spike
-        if (scan_index > 1
-                && (vToCm
-                        > 0.9
-                                * scan_sensor_data_array[scan_index - 2].IR_raw_val
-                        && vToCm
-                                < 1.10
-                                        * scan_sensor_data_array[scan_index - 2].IR_raw_val))
+        if (scan_index > 1 && (vToCm > 0.9 * scan_sensor_data_array[scan_index - 2].IR_raw_val && vToCm
+                                < 1.10 * scan_sensor_data_array[scan_index - 2].IR_raw_val))
         {
-            obj.IR_raw_val =
-            SCAN_ALPHA_IR * vToCm
-                    + (1 - SCAN_ALPHA_IR)
-                            * scan_sensor_data_array[scan_index - 2].IR_raw_val;
+            obj.IR_raw_val = SCAN_ALPHA_IR * vToCm + (1 - SCAN_ALPHA_IR) * scan_sensor_data_array[scan_index - 2].IR_raw_val;
 
             // Replace old spike
             scan_sensor_data_array[scan_index - 1].IR_raw_val = obj.IR_raw_val < 100 ? obj.IR_raw_val : 100;
@@ -145,17 +130,14 @@ void process_noisy_data(int angle, cyBOT_Scan_t *scan_data)
     // Send scan data to GUI
     putty_send_scan_data(angle, &scan_sensor_data_array[scan_index]);
     lcd_clear();
-    lcd_printf("%3d %5f %5.1f\n", angle,
-               scan_sensor_data_array[scan_index].sound_dist,
-               scan_sensor_data_array[scan_index].IR_raw_val);
+    lcd_printf("%3d %5f %5.1f\n", angle, scan_sensor_data_array[scan_index].sound_dist, scan_sensor_data_array[scan_index].IR_raw_val);
     scan_index++;
 }
 
 // Callback to get center distance of object
 void get_center_distance(int angle, cyBOT_Scan_t *scan_data)
 {
-    lcd_printf("%3d %5f %5.1f\n", angle, scan_data->sound_dist,
-               scan_data->IR_raw_val);
+    lcd_printf("%3d %5f %5.1f\n", angle, scan_data->sound_dist, scan_data->IR_raw_val);
 
     center_distance = scan_data->sound_dist;
 }
@@ -194,9 +176,7 @@ void object_update_linear_width(Object_t *obj, int start_angle, int end_angle)
 
 // Re-measures one object with the PING at its mid-angle. Returns 1 if the
 // object is real and was stored in *out, 0 if it was rejected.
-static int measure_object(cyBOT_Scan_t data_array[], int start_angle,
-                          int start_idx, int end_idx, cyBOT_Scan_t *scan_data,
-                          Object_t *out)
+static int measure_object(cyBOT_Scan_t data_array[], int start_angle, int start_idx, int end_idx, cyBOT_Scan_t *scan_data, Object_t *out)
 {
     int start_deg = start_angle + start_idx * SCAN_STEP_DEG;
     int end_deg = start_angle + end_idx * SCAN_STEP_DEG;
@@ -322,4 +302,37 @@ Object_t find_smallest_objects(cyBOT_Scan_t data_array[], int start_angle, int e
         }
     }
     return smallest;
+}
+
+void classify_all_objects(Object_t objects[], int count)
+{
+    int i;
+
+    for (i = 0; i < count; i++)
+    {
+        objects[i].classification =
+            classify_object(objects[i].linear_width);
+    }
+}
+
+ObjectClass_t classify_object(float width)
+{
+    if (width > 5.7)
+    {
+        return OBJECT_LARGEST;
+    }
+    else if (width > 4.0)
+    {
+        return OBJECT_SECOND_LARGEST;
+    }
+    else if (width > 2.7)
+    {
+        return OBJECT_THIRD_LARGEST;
+    }
+    else if (width > 0.0 && width < 2.7)
+    {
+        return OBJECT_SURVIVOR;
+    }
+
+    return OBJECT_UNKNOWN;
 }
